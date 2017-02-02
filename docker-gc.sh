@@ -15,13 +15,38 @@ done
 trap "rm -f -- '$PID_DIR/dockergc'" EXIT
 echo $$ > $PID_DIR/dockergc
 
-
+echo " === DOCKER CONTAINERS === "
 $DOCKER ps -a
+
 echo " === STOPING CONTAINERS === "
-$DOCKER stop $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') 2>/dev/null
+if [[ "$DRY_RUN" = "true" ]]
+then
+    echo "DRY RUN: $DOCKER stop $($DOCKER ps -a | grep -v docker-gc |  grep -v -E ${EXCLUDE_CONTAINERS// /|} | awk 'FNR > 1 {print $1}') 2>/dev/null"
+else
+    $DOCKER stop $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') 2>/dev/null
+fi
+
 echo " === DELETING CONTAINERS === "
-$DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') >/dev/null
+if [[ "$DRY_RUN" = "true" ]]
+then
+    echo "DRY RUN: $DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E ${EXCLUDE_CONTAINERS// /|} | awk 'FNR > 1 {print $1}') >/dev/null"
+else
+    $DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') >/dev/null
+fi
+
 echo " === IMAGES TO DELETE === "
-$DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"
+if [[ "$DRY_RUN" = "true" ]]
+then
+    echo "DRY RUN: $DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}""
+else
+    $DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"
+fi
+
+
 echo " === DELETING IMAGES === "
-$DOCKER rmi --force $($DOCKER images -a  | tail -n+2 | sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"|  cut -d' ' -f3) 2>/dev/null
+if [[ "$DRY_RUN" = "true" ]]
+then
+  echo "DRY RUN: $DOCKER rmi --force $($DOCKER images -a  | tail -n+2 | sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"|  cut -d' ' -f3) 2>/dev/null"
+else
+    $DOCKER rmi --force $($DOCKER images -a  | tail -n+2 | sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"|  cut -d' ' -f3) 2>/dev/null
+fi
