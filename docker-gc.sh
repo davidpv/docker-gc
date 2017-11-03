@@ -31,14 +31,16 @@ if [[ "$DRY_RUN" = "true" ]]
 then
     echo "DRY RUN: $DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E ${EXCLUDE_CONTAINERS// /|} | awk 'FNR > 1 {print $1}') >/dev/null"
 else
+    echo "$DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') >/dev/null"
     $DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') >/dev/null
 fi
 
 echo " === IMAGES TO DELETE === "
 if [[ "$DRY_RUN" = "true" ]]
 then
-    echo "DRY RUN: $DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}""
+    echo "$DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}""
 else
+    echo "$DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}""
     $DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"
 fi
 
