@@ -21,8 +21,9 @@ $DOCKER ps -a
 echo " === STOPING CONTAINERS === "
 if [[ "$DRY_RUN" = "true" ]]
 then
-    echo "DRY RUN: $DOCKER stop $($DOCKER ps -a | grep -v docker-gc |  grep -v -E ${EXCLUDE_CONTAINERS// /|} | awk 'FNR > 1 {print $1}') 2>/dev/null"
+    echo "DRY RUN: $DOCKER stop $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') 2>/dev/null"
 else
+    echo "DRY RUN: $DOCKER stop $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') 2>/dev/null"
     $DOCKER stop $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') 2>/dev/null
 fi
 
@@ -31,7 +32,7 @@ if [[ "$DRY_RUN" = "true" ]]
 then
     echo "DRY RUN: $DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E ${EXCLUDE_CONTAINERS// /|} | awk 'FNR > 1 {print $1}') >/dev/null"
 else
-    echo "$DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') >/dev/null"
+    echo "DRY RUN: $DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') >/dev/null"
     $DOCKER rm --force $($DOCKER ps -a | grep -v docker-gc |  grep -v -E "${EXCLUDE_CONTAINERS// /|}" | awk 'FNR > 1 {print $1}') >/dev/null
 fi
 
@@ -40,7 +41,7 @@ if [[ "$DRY_RUN" = "true" ]]
 then
     echo "$DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}""
 else
-    echo "$DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}""
+    echo "DRY RUN: $DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}""
     $DOCKER images -a | tail -n+2  |sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"
 fi
 
@@ -48,7 +49,8 @@ fi
 echo " === DELETING IMAGES === "
 if [[ "$DRY_RUN" = "true" ]]
 then
-  echo "DRY RUN: $DOCKER rmi --force $($DOCKER images -a  | tail -n+2 | sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"|  cut -d' ' -f3) 2>/dev/null"
+    echo "DRY RUN: $DOCKER rmi --force $($DOCKER images -a  | tail -n+2 | sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"|  cut -d' ' -f3) 2>/dev/null"
 else
+    echo "DRY RUN: $DOCKER rmi --force $($DOCKER images -a  | tail -n+2 | sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"|  cut -d' ' -f3) 2>/dev/null"
     $DOCKER rmi --force $($DOCKER images -a  | tail -n+2 | sed 's/^\([^ ]*\) *\([^ ]*\) *\([^ ]*\).*/ \1:\2 \3 /' | grep -v -E "${EXCLUDE_IMAGES// /|}"|  cut -d' ' -f3) 2>/dev/null
 fi
